@@ -1,9 +1,11 @@
 from telegram.ext import Updater, CommandHandler
+from bs4 import BeautifulSoup
 import telegram
 import logging
 import feedparser
 import requests
 import json
+
 
 logging.basicConfig(format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -20,29 +22,23 @@ and displaying the title and its description.
 """
 
 def news(bot, update):
-	feed = feedparser.parse('http://timesofindia.indiatimes.com/rssfeeds/1221656.cms')
+	feed = feedparser.parse('http://timesofindia.indiatimes.com/rssfeedstopstories.cms')
 	for i in range(5):
 		title = feed.entries[i].title
 		description = feed.entries[i].description
 		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + title + "</b>" + "\n\n" + description, parse_mode = telegram.ParseMode.HTML)
 
 def songs(bot,update):
-	url = 'https://api.spotify.com/v1/users/spotify/playlists/5FJXhjdILmRA2z5bvz4nzf/tracks?limit=5'
-	headers = {'Authorization': 'Bearer BQAUTshSZjK_TgBhbZeF4KiSO6ZvLlR11piUXpOFtYyIoGgWNIZF3Uw1tbYB7s3WPdBT8nCiWY1UT3gBlsurah7OtS2ILhDekdOO9pxNil843GzA6fyLmfIoo524AR0aRcl0kdMqLeP2g_Q8VJNjKLRt0q-2N8XVZ0xg2om7'}
-	r = requests.get(url, headers=headers)
-	
-	#url = 'https://api.spotify.com/v1/users/spotify/playlists/5FJXhjdILmRA2z5bvz4nzf/tracks?limit=5'
-	#headers = {'Authorization': 'Bearer BQAUTshSZjK_TgBhbZeF4KiSO6ZvLlR11piUXpOFtYyIoGgWNIZF3Uw1tbYB7s3WPdBT8nCiWY1UT3gBlsurah7OtS2ILhDekdOO9pxNil843GzA6fyLmfIoo524AR0aRcl0kdMqLeP2g_Q8VJNjKLRt0q-2N8XVZ0xg2om7'}
-
-	#r = requests.get(url, headers=headers)
-	print(r)
-	data = r.json()
+	url = "https://open.spotify.com/user/spotify/playlist/4hOKQuZbraPDIfaGbM3lKI"
+	response = requests.get(url)
+	html = response.content
+	soup = BeautifulSoup(html)
+	songName = soup.select("[class~=track-name]")
+	artistName = soup.select("[class~=artists-albums]")
 	for i in range(5):
-		songName = data["items"][i]["track"]["name"]
-		artitstName = data["items"][i]["track"]["artists"][i]["name"]
-		previewUrl = data["items"][i]["track"]["preview_url"]
-		bot.sendMessage(chat_id=update.message.chat_id, text = songName + "\n" + artitstName + "\n" + previewUrl)
-	
+		song = songName[i].string
+		link = "https://www.youtube.com/results?search_query=" + song
+		bot.sendMessage(chat_id=update.message.chat_id, text='<b>' + song + '</b>' + ' by ' + artistName[i].a.get_text(), parse_mode=telegram.ParseMode.HTML)
 
 start_handler = CommandHandler('start', start)
 news_handler = CommandHandler('topnews', news)
