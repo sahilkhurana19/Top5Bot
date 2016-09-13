@@ -63,14 +63,14 @@ def worldNews(bot, update):
 		title = feed.entries[i].title
 		description = feed.entries[i].description.rsplit("/></a>")[1]
 		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + title + "</b>" + "\n\n" + description, parse_mode = telegram.ParseMode.HTML)
-"""
+
 def sportsNews(bot, update):
 	feed = feedparser.parse('http://timesofindia.indiatimes.com/rssfeeds/4719148.cms')
 	for i in range(5):
 		title = feed.entries[i].title
 		description = feed.entries[i].description.rsplit("/></a>")[1]
 		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + title + "</b>" + "\n\n" + description, parse_mode = telegram.ParseMode.HTML)
-"""
+
 
 movies_handler = CommandHandler('topmovies', movies)
 start_handler = CommandHandler('start', start)
