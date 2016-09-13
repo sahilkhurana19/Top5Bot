@@ -1,10 +1,12 @@
 from telegram.ext import Updater, CommandHandler
 from bs4 import BeautifulSoup
+from datetime import date
 import telegram
 import logging
 import feedparser
 import requests
 import json
+
 
 
 logging.basicConfig(format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -32,7 +34,7 @@ def songs(bot,update):
 	url = "https://open.spotify.com/user/spotify/playlist/4hOKQuZbraPDIfaGbM3lKI"
 	response = requests.get(url)
 	html = response.content
-	soup = BeautifulSoup(html)
+	soup = BeautifulSoup(html,"lxml")
 	songName = soup.select("[class~=track-name]")
 	artistName = soup.select("[class~=artists-albums]")
 	for i in range(5):
@@ -40,11 +42,26 @@ def songs(bot,update):
 		link = "https://www.youtube.com/results?search_query=" + song
 		bot.sendMessage(chat_id=update.message.chat_id, text='<b>' + song + '</b>' + ' by ' + artistName[i].a.get_text(), parse_mode=telegram.ParseMode.HTML)
 
+def movies(bot, update):
+	bms = "https://in.bookmyshow.com/national-capital-region-ncr"
+	year = date.today().year
+	response = requests.get(bms)
+	html = response.content
+	soup = BeautifulSoup(html,"lxml")
+	movieName = soup.find_all("a", {"class":"__name"})
+	for i in range(5):
+		movieList = movieName[i].rsplit(" (")[0]
+		omdb = "http://www.omdbapi.com/?t=" + movieList + "&y=" + year + "&plot=full&r=json"
+		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + movieName[i].string + "</b>", parse_mode = telegram.ParseMode.HTML)
+
+
+movies_handler = CommandHandler('topmovies', movies)
 start_handler = CommandHandler('start', start)
 news_handler = CommandHandler('topnews', news)
 songs_handler = CommandHandler('topsongs', songs)
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(news_handler)
 dispatcher.add_handler(songs_handler)
+dispatcher.add_handler(movies_handler)
 
 updater.start_polling()
