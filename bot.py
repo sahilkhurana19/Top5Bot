@@ -44,15 +44,17 @@ def songs(bot,update):
 
 def movies(bot, update):
 	bms = "https://in.bookmyshow.com/national-capital-region-ncr"
-	year = date.today().year
+	year = str(date.today().year)
 	response = requests.get(bms)
 	html = response.content
-	soup = BeautifulSoup(html,"lxml")
+	soup = BeautifulSoup(html)
 	movieName = soup.find_all("a", {"class":"__name"})
 	for i in range(5):
-		movieList = movieName[i].rsplit(" (")[0]
+		movieList = movieName[i].string.rsplit(" (")[0]
+		movieList = movieList.replace(" ","+")
 		omdb = "http://www.omdbapi.com/?t=" + movieList + "&y=" + year + "&plot=full&r=json"
-		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + movieName[i].string + "</b>", parse_mode = telegram.ParseMode.HTML)
+		movieDetails = requests.get(omdb).json()
+		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + movieName[i].string + "</b>"+ "\nActors: " + movieDetails["Actors"] + "\nPlot: " + movieDetails["Plot"], parse_mode = telegram.ParseMode.HTML)
 
 
 movies_handler = CommandHandler('topmovies', movies)
