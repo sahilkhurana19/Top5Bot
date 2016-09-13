@@ -30,6 +30,7 @@ def news(bot, update):
 		description = feed.entries[i].description
 		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + title + "</b>" + "\n\n" + description, parse_mode = telegram.ParseMode.HTML)
 
+
 def songs(bot,update):
 	url = "https://open.spotify.com/user/spotify/playlist/4hOKQuZbraPDIfaGbM3lKI"
 	response = requests.get(url)
@@ -56,14 +57,33 @@ def movies(bot, update):
 		movieDetails = requests.get(omdb).json()
 		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + movieName[i].string + "</b>"+ "\nActors: " + movieDetails["Actors"] + "\nPlot: " + movieDetails["Plot"], parse_mode = telegram.ParseMode.HTML)
 
+def worldNews(bot, update):
+	feed = feedparser.parse('http://timesofindia.indiatimes.com/rssfeeds/296589292.cms')
+	for i in range(5):
+		title = feed.entries[i].title
+		description = feed.entries[i].description.rsplit("/></a>")[1]
+		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + title + "</b>" + "\n\n" + description, parse_mode = telegram.ParseMode.HTML)
+"""
+def sportsNews(bot, update):
+	feed = feedparser.parse('http://timesofindia.indiatimes.com/rssfeeds/4719148.cms')
+	for i in range(5):
+		title = feed.entries[i].title
+		description = feed.entries[i].description.rsplit("/></a>")[1]
+		bot.sendMessage(chat_id=update.message.chat_id, text="<b>" + title + "</b>" + "\n\n" + description, parse_mode = telegram.ParseMode.HTML)
+"""
 
 movies_handler = CommandHandler('topmovies', movies)
 start_handler = CommandHandler('start', start)
 news_handler = CommandHandler('topnews', news)
 songs_handler = CommandHandler('topsongs', songs)
+worldNews_handler = CommandHandler('topinternationalnews', worldNews)
+sportsNews_handler = CommandHandler('topsportsnews', sportsNews)
+
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(news_handler)
 dispatcher.add_handler(songs_handler)
 dispatcher.add_handler(movies_handler)
+dispatcher.add_handler(worldNews_handler)
+dispatcher.add_handler(sportsNews_handler)
 
 updater.start_polling()
