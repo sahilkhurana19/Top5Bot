@@ -35,7 +35,7 @@ def songs(bot,update):
 	url = "https://open.spotify.com/user/spotify/playlist/4hOKQuZbraPDIfaGbM3lKI"
 	response = requests.get(url)
 	html = response.content
-	soup = BeautifulSoup(html,"lxml")
+	soup = BeautifulSoup(html)
 	songName = soup.select("[class~=track-name]")
 	artistName = soup.select("[class~=artists-albums]")
 	for i in range(5):
