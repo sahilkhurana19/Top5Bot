@@ -9,10 +9,12 @@ import json
 import os
 
 
-
 logging.basicConfig(format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-updater = Updater(token = '259123812:AAEDFd5tNT3pOwPzxlC3Z6Kyx7L69qJFs5U')
+#updater = Updater(token = '259123812:AAEDFd5tNT3pOwPzxlC3Z6Kyx7L69qJFs5U')
+TOKEN = "259123812:AAEDFd5tNT3pOwPzxlC3Z6Kyx7L69qJFs5U"
+PORT = int(os.environ.get('PORT', '8443'))
+updater = Updater(TOKEN)
 dispatcher = updater.dispatcher
 
 
@@ -82,9 +84,7 @@ sportsNews_handler = CommandHandler('topsportsnews', sportsNews)
 
 
 
-TOKEN = "259123812:AAEDFd5tNT3pOwPzxlC3Z6Kyx7L69qJFs5U"
-PORT = int(os.environ.get('PORT', '5000'))
-updater = Updater(TOKEN)
+
 # add handlers
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(news_handler)
