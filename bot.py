@@ -6,6 +6,7 @@ import logging
 import feedparser
 import requests
 import json
+import os
 
 
 
@@ -79,11 +80,20 @@ songs_handler = CommandHandler('topsongs', songs)
 worldNews_handler = CommandHandler('topinternationalnews', worldNews)
 sportsNews_handler = CommandHandler('topsportsnews', sportsNews)
 
+
+
+TOKEN = "259123812:AAEDFd5tNT3pOwPzxlC3Z6Kyx7L69qJFs5U"
+PORT = int(os.environ.get('PORT', '5000'))
+updater = Updater(TOKEN)
+# add handlers
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(news_handler)
 dispatcher.add_handler(songs_handler)
 dispatcher.add_handler(movies_handler)
 dispatcher.add_handler(worldNews_handler)
 dispatcher.add_handler(sportsNews_handler)
-
-updater.start_polling()
+updater.start_webhook(listen="0.0.0.0",
+                      port=PORT,
+                      url_path=TOKEN)
+updater.bot.setWebhook("https://top5bot.herokuapp.com/" + TOKEN)
+updater.idle()
